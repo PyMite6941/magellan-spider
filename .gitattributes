@@ -1,0 +1,13 @@
+# Force LF for anything the Linux CI runner executes or parses. Windows checkouts
+# convert to CRLF locally by default, and a shell script with CRLF line endings
+# fails on Ubuntu with an obscure "bad interpreter" or "$'\r': command not found".
+*.sh        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.py        text eol=lf
+*.go        text eol=lf
+*.sql       text eol=lf
+
+# Data files: keep byte-identical, never touch line endings.
+*.json      -text
+*.sq3       binary
