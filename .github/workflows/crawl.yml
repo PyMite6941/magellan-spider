@@ -102,3 +102,5 @@ jobs:
             echo ""
             tail -5 crawl-log.md 2>/dev/null || echo "(no log yet)"
           } >> "$GITHUB_STEP_SUMMARY"
+
+# (re-indexed after initial push)
