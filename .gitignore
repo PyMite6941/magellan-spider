@@ -1,0 +1,32 @@
+# Crawl artifacts — large, regenerable, and not source
+magellan.sq3
+magellan-export.sq3
+magellan-turso.sq3
+*.sq3-shm
+*.sq3-wal
+sqlite_csv_export/
+crawled_topics.txt
+
+# Build output
+magellan-spider.exe
+*.exe
+__pycache__/
+*.pyc
+
+# Secrets — the OCI API key and the SSH key live in this directory
+.env
+*.pem
+*.key
+*.pub
+
+# Retired Oracle-era scripts: these contain hardcoded database credentials.
+# Delete them rather than committing them.
+legacy_mysql/
+
+# Editor / tooling
+.aider*
+*.bak
+*.pre-upsert.bak
+
+# Crawl logs
+*.log

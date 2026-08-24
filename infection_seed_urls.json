@@ -1,0 +1,181 @@
+{
+  "infection_research": {
+    "description": "Specialized seed URLs for infection, virus, bacteria, and related bioengineering research",
+    "keywords": [
+      "infection", "virus", "bacteria", "pathogen", "microbe", "epidemic",
+      "pandemic", "disease", "vaccine", "immunology", "antibiotics",
+      "virology", "bacteriology", "microbiology", "antibiotic resistance",
+      "emerging infectious diseases", "zoonotic diseases", "epidemiology",
+      "viral replication", "bacterial pathogenesis", "host-pathogen interaction",
+      "infectious disease control", "vaccine development", "antimicrobial agents",
+      "diagnostic microbiology", "clinical microbiology", "molecular virology",
+      "bacterial genetics", "viral evolution", "bacterial evolution", "immunotherapy",
+      "gene therapy for infectious diseases", "CRISPR for infectious diseases",
+      "synthetic biology for infectious diseases", "bioengineering pathogens",
+      "pathogen detection technologies", "rapid diagnostic tests",
+      "point-of-care diagnostics", "biosensors for pathogens",
+      "nanotechnology for infectious diseases", "AI in infectious disease research",
+      "biodefense", "biosecurity", "pandemic preparedness", "one health approach"
+    ],
+
+    "authoritative_sources": [
+      // Government and international health organizations
+      "https://www.who.int/health-topics/infectious-diseases",
+      "https://www.cdc.gov/infectiousdiseases/index.html",
+      "https://www.ecdc.europa.eu/en/infectious-diseases",
+      "https://www.nih.gov/about-nih/what-we-do/nih-turning-discovery-into-health/infectious-diseases",
+      "https://www.niaid.nih.gov/research/infectious-diseases",
+      "https://www.fda.gov/vaccines-blood-biologics/vaccines",
+      "https://www.ema.europa.eu/en/human-regulatory/research-development/scientific-guidelines/infectious-disease",
+
+      // Research institutions and universities
+      "https://www.pasteur.fr/en/research-journal/topics/infectious-diseases",
+      "https://www.lshtm.ac.uk/research/centres-projects-groups/infectious-diseases",
+      "https://www.imperial.ac.uk/infectious-disease",
+      "https://www.hsph.harvard.edu/infectious-diseases/",
+      "https://medicine.yale.edu/lab/tompkins/infectiousdiseases/",
+      "https://www.rockefeller.edu/research/areas/infectious-diseases/",
+      "https://www.sanger.ac.uk/programme/pathogens/",
+      "https://www.broadinstitute.org/infectious-disease-and-microbiome",
+
+      // Scientific journals
+      "https://www.nature.com/subjects/infectious-diseases",
+      "https://www.sciencedirect.com/journal/the-lancet-infectious-diseases",
+      "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2779950",
+      "https://www.nejm.org/infectious-disease",
+      "https://cmr.asm.org/",
+      "https://jvi.asm.org/",
+      "https://aac.asm.org/",
+      "https://mbio.asm.org/",
+      "https://www.cell.com/cell-host-microbe/home",
+      "https://www.pnas.org/topic/441",
+
+      // Bioengineering and technology-focused sources
+      "https://www.nature.com/subjects/synthetic-biology",
+      "https://www.sciencedirect.com/journal/metabolic-engineering",
+      "https://www.cell.com/cell-systems/home",
+      "https://www.nature.com/subjects/biotechnology",
+      "https://www.acs.org/content/acs/en/molecule-of-the-week/archive/b/biotechnology.html",
+      "https://www.frontiersin.org/journals/bioengineering-and-biotechnology",
+      "https://www.sciencedirect.com/journal/biosensors-and-bioelectronics",
+      "https://www.nature.com/subjects/nanotechnology",
+
+      // Specific disease and pathogen resources
+      "https://www.who.int/teams/global-malaria-programme",
+      "https://www.cdc.gov/tb/",
+      "https://www.hiv.gov/",
+      "https://www.cdc.gov/flu/",
+      "https://www.cdc.gov/coronavirus/",
+      "https://www.who.int/teams/global-hiv-hepatitis-and-stis-programmes",
+      "https://www.cdc.gov/antibiotic-use/",
+      "https://www.who.int/teams/global-antimicrobial-resistance-programme",
+
+      // Databases and research repositories
+      "https://www.ncbi.nlm.nih.gov/pmc/",
+      "https://pubmed.ncbi.nlm.nih.gov/",
+      "https://www.ebi.ac.uk/",
+      "https://www.uniprot.org/",
+      "https://www.rcsb.org/",
+      "https://www.genome.jp/kegg/pathway.html",
+      "https://www.viprbrc.org/",
+      "https://www.pathogenportal.org/",
+      "https://www.gisaid.org/",
+
+      // Bioengineering and synthetic biology for infectious diseases
+      "https://www.jbei.org/",
+      "https://synberc.org/",
+      "https://www.igem.org/Main_Page",
+      "https://www.biobricks.org/",
+      "https://www.addgene.org/browse/article/28196614/",
+
+      // Emerging technologies for infectious disease research
+      "https://www.nature.com/articles/s41564-020-0729-8",  // AI in microbiology
+      "https://www.sciencedirect.com/science/article/pii/S266652472100094X",  // Nanotechnology for infectious diseases
+      "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7226624/",  // CRISPR for infectious diseases
+      "https://www.frontiersin.org/articles/10.3389/fbioe.2020.00802/full",  // Biosensors for pathogens
+
+      // News and updates
+      "https://www.statnews.com/category/infectious-disease/",
+      "https://www.cidrap.umn.edu/",
+      "https://www.healio.com/infectious-disease",
+      "https://www.contagionlive.com/",
+      "https://www.infectiousdiseaseadvisor.com/",
+
+      // Educational resources
+      "https://www.khanacademy.org/science/health-and-medicine",
+      "https://www.coursera.org/learn/infectious-diseases",
+      "https://www.edx.org/learn/infectious-diseases",
+      "https://www.hhmi.org/biointeractive/infectious-diseases"
+    ],
+
+    "search_engines": [
+      "https://pubmed.ncbi.nlm.nih.gov/?term=%s",
+      "https://scholar.google.com/scholar?q=%s",
+      "https://www.ncbi.nlm.nih.gov/pmc/?term=%s",
+      "https://www.sciencedirect.com/search?qs=%s",
+      "https://www.nature.com/search?q=%s",
+      "https://www.sciencemag.org/search?searchTerm=%s"
+    ],
+
+    "specialized_databases": [
+      {
+        "name": "Virus Pathogen Database and Analysis Resource (ViPR)",
+        "url": "https://www.viprbrc.org/",
+        "description": "Comprehensive viral pathogen database with analysis tools"
+      },
+      {
+        "name": "Influenza Research Database",
+        "url": "https://www.fludb.org/",
+        "description": "Database for influenza virus research"
+      },
+      {
+        "name": "PATRIC (Bacterial Bioinformatics Resource Center)",
+        "url": "https://www.patricbrc.org/",
+        "description": "Comprehensive bacterial bioinformatics resource"
+      },
+      {
+        "name": "VectorBase",
+        "url": "https://www.vectorbase.org/",
+        "description": "Bioinformatics resource for invertebrate vectors of human pathogens"
+      },
+      {
+        "name": "EuPathDB",
+        "url": "https://eupathdb.org/eupathdb/",
+        "description": "Eukaryotic pathogen database resource"
+      },
+      {
+        "name": "GISAID",
+        "url": "https://www.gisaid.org/",
+        "description": "Global Initiative on Sharing All Influenza Data"
+      }
+    ],
+
+    "bioengineering_resources": [
+      {
+        "name": "iGEM Registry of Standard Biological Parts",
+        "url": "https://parts.igem.org/Main_Page",
+        "description": "Collection of genetic parts for synthetic biology"
+      },
+      {
+        "name": "Addgene",
+        "url": "https://www.addgene.org/",
+        "description": "Plasmid repository for molecular biology"
+      },
+      {
+        "name": "BioBricks Foundation",
+        "url": "https://biobricks.org/",
+        "description": "Standard biological parts for synthetic biology"
+      },
+      {
+        "name": "Synthetic Biology Open Language (SBOL)",
+        "url": "https://sbolstandard.org/",
+        "description": "Standard for representation of genetic designs"
+      },
+      {
+        "name": "Joint BioEnergy Institute",
+        "url": "https://www.jbei.org/",
+        "description": "Bioenergy and biotechnology research"
+      }
+    ]
+  }
+}
