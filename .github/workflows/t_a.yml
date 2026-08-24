@@ -1,9 +1,0 @@
-name: TA
-on:
-  schedule:
-    - cron: '17 1,5,9,13,17,21 * * *'
-jobs:
-  j:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo a
