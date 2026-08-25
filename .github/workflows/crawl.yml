@@ -80,7 +80,10 @@ jobs:
 
       - name: Commit crawl state
         run: |
-          if git diff --quiet -- .crawl-state crawl-log.md 2>/dev/null; then
+          # git diff ignores untracked files, and on the first run these files are
+          # new — using it here silently skipped the commit, leaving the cursor
+          # pinned so every scheduled run re-crawled the same two topics.
+          if [ -z "$(git status --porcelain -- .crawl-state crawl-log.md)" ]; then
             echo "no state change to commit"
             exit 0
           fi
