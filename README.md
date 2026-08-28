@@ -43,6 +43,36 @@ Flip `TURSO_URL` to the new database and destroy the old one when it looks right
 Run the Python scripts with `-u` — output is block-buffered when piped, which
 makes a long run look like a hang.
 
+## Continuous local crawling
+
+`crawl_daemon.sh` runs batches back to back and resumes wherever it stopped. Start
+it, stop it, start it again — it never re-does finished work.
+
+```bash
+bash crawl_daemon.sh                  # run until stopped
+bash crawl_daemon.sh --batches 5      # run five batches then exit
+bash crawl_daemon.sh --status         # cursor position and whether it is running
+bash crawl_daemon.sh --stop           # graceful: finish the current batch, then quit
+```
+
+Ctrl-C also stops it. The cursor only advances *after* a batch publishes
+successfully, so an interrupted run loses at most one unpublished batch and never
+skips topics. A failed batch is retried rather than skipped.
+
+Tuning: `BATCH_SIZE` (topics per batch, default 5), `LIMIT` (pages per topic,
+default 40), `PAUSE` (seconds between batches, default 60).
+
+The daemon keeps its cursor in `.crawl-state.local`, separate from the CI cursor in
+`.crawl-state`, so a local run and the GitHub schedule never fight over one
+counter. They may cover the same topics; that is harmless, because uploads upsert
+rather than duplicate.
+
+**The batch database is `crawl-batch.sq3`, never `magellan.sq3`.** Each batch wipes
+its database before crawling, and `magellan.sq3` is the multi-GB local archive —
+the batch script now refuses to delete any database over 200 MB, and
+`turso_upload.py` takes an explicit `--db` so it publishes the batch rather than
+re-uploading the whole corpus.
+
 ## Automated crawling
 
 `.github/workflows/crawl.yml` runs `crawl_batch.sh` six times a day. Each run
