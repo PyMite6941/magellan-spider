@@ -42,7 +42,10 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(HERE, ".env"))
 
-SQ3_PATH = os.path.join(HERE, "magellan.sq3")
+# Which database to publish. The batch crawler writes to a scratch file so it can
+# wipe it each run, and must not be made to upload the multi-GB archive by accident
+# — that would re-send the entire corpus and burn the monthly write quota.
+SQ3_PATH = os.environ.get("MAGELLAN_DB") or os.path.join(HERE, "magellan.sq3")
 STATEMENTS_PER_REQUEST = 100  # keeps each HTTP body well under Turso's limit
 CONTENT_CAP = 8 * 1024        # chars of cleaned text kept per page
 
@@ -335,7 +338,14 @@ def main() -> None:
                         help="read and filter locally, send nothing")
     parser.add_argument("--only", default="",
                         help="comma-separated subset of: " + ", ".join(TASKS))
+    parser.add_argument("--db", default="",
+                        help="SQLite file to publish (default: magellan.sq3)")
     args = parser.parse_args()
+
+    if args.db:
+        global SQ3_PATH
+        SQ3_PATH = os.path.abspath(args.db)
+    print(f"source: {SQ3_PATH}")
 
     selected = [t.strip() for t in args.only.split(",") if t.strip()] or list(TASKS)
     unknown = [t for t in selected if t not in TASKS]

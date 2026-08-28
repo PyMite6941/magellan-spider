@@ -30,3 +30,8 @@ legacy_mysql/
 
 # Crawl logs
 *.log
+
+# Local crawl daemon state (CI uses .crawl-state)
+.crawl-state.local
+.crawl-stop
+crawl-batch.sq3

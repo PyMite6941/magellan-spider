@@ -19,11 +19,23 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+# CI passes TURSO_* as secrets; a local run keeps them in .env, which only the
+# Python uploader reads. Pull just those two across rather than sourcing the whole
+# file — .env also holds Windows paths whose backslashes a shell would mangle.
+if [ -f .env ]; then
+    [ -z "${TURSO_URL:-}" ]   && TURSO_URL=$(grep -E '^TURSO_URL=' .env | cut -d= -f2- | tr -d '')
+    [ -z "${TURSO_TOKEN:-}" ] && TURSO_TOKEN=$(grep -E '^TURSO_TOKEN=' .env | cut -d= -f2- | tr -d '')
+    export TURSO_URL TURSO_TOKEN
+fi
+
 BATCH_SIZE="${BATCH_SIZE:-10}"
 LIMIT="${LIMIT:-60}"
 STATE_FILE="${STATE_FILE:-.crawl-state}"
 TOPICS_FILE="${TOPICS_FILE:-topics.txt}"
-DB="${DB:-magellan.sq3}"
+# NOT magellan.sq3. This script wipes its database at the start of every batch,
+# and magellan.sq3 is the 4.7 GB local archive — pointing DB at it would delete the
+# only copy of the corpus. CI is unaffected (fresh checkout, no archive present).
+DB="${DB:-crawl-batch.sq3}"
 SPIDER="${SPIDER:-./magellan-spider}"
 LOG="${LOG:-crawl-log.md}"
 
@@ -46,6 +58,16 @@ fi
 # ── Crawl ─────────────────────────────────────────────────────────────────────
 # A fresh database per batch: the crawler's dedupe is per-run, and the remote
 # index is the real source of truth (uploads upsert, so re-crawling is harmless).
+# Refuse to delete anything large — that would be an archive, not a batch scratch
+# file, and losing it is unrecoverable.
+if [ -f "$DB" ]; then
+    DB_MB=$(( $(wc -c < "$DB") / 1048576 ))
+    if [ "$DB_MB" -gt 200 ] && [ "${FORCE_DB_RESET:-0}" != "1" ]; then
+        echo "REFUSING to delete $DB (${DB_MB} MB) — that looks like an archive."
+        echo "Point DB= at a scratch file, or set FORCE_DB_RESET=1 if you are sure."
+        exit 1
+    fi
+fi
 rm -f "$DB" "$DB-wal" "$DB-shm"
 
 CRAWLED=0
@@ -56,7 +78,8 @@ while IFS= read -r topic; do
     # Never let one bad topic abort the batch — the upload still publishes the rest.
     if "$SPIDER" -keyword "$topic" -seeds starter_websites.json -limit "$LIMIT" -db "$DB" \
         > "/tmp/crawl-topic.log" 2>&1; then
-        echo "  ok ($(grep -c 'Saved' /tmp/crawl-topic.log || echo 0) saved)"
+        SAVED=$(grep -c 'Saved' /tmp/crawl-topic.log 2>/dev/null) || SAVED=0
+        echo "  ok (${SAVED} pages saved)"
     else
         echo "  FAILED (continuing) — last lines:"
         tail -3 /tmp/crawl-topic.log | sed 's/^/    /'
@@ -85,7 +108,7 @@ if [ -z "${TURSO_URL:-}" ] || [ -z "${TURSO_TOKEN:-}" ]; then
     exit 0
 fi
 
-python turso_upload.py
+python turso_upload.py --db "$DB"
 
 # ── Advance ───────────────────────────────────────────────────────────────────
 NEXT=$(( (CURSOR + BATCH_SIZE) % TOTAL ))
