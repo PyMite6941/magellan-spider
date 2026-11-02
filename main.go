@@ -2593,9 +2593,61 @@ func processURL(urlStr string, verbose bool) {
 }
 
 // loadSeedFile loads seed URLs from a JSON file
+//
+// Accepted shapes:
+//
+//	{"websites": ["https://...", ...]}                 starter_websites.json
+//	{"seeds": [{"url": "https://...", ...}, ...]}     Source Finder /seeds response
+//	["https://...", ...]                              plain list
+//
+// Seeds go to the FRONT of the queue: they were picked for this topic, so they
+// should be crawled before the generic keyword seeds and before any links found
+// along the way. addToQueue still applies the usual domain/path blocklists.
 func loadSeedFile(filename string) {
-	// This function would be implemented to load seed URLs
-	// from a JSON file
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		fmt.Printf("Warning: could not read seed file %s: %v\n", filename, err)
+		return
+	}
+
+	var urls []string
+	var obj struct {
+		Websites []string `json:"websites"`
+		Seeds    []struct {
+			URL string `json:"url"`
+		} `json:"seeds"`
+	}
+	if err := json.Unmarshal(data, &obj); err == nil {
+		urls = append(urls, obj.Websites...)
+		for _, s := range obj.Seeds {
+			urls = append(urls, s.URL)
+		}
+	} else if err := json.Unmarshal(data, &urls); err != nil {
+		fmt.Printf("Warning: seed file %s is not a recognised JSON shape: %v\n", filename, err)
+		return
+	}
+
+	mu.Lock()
+	before := len(queue)
+	mu.Unlock()
+
+	kw := strings.Join(keywords, ",")
+	for _, u := range urls {
+		u = strings.TrimSpace(u)
+		if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
+			addToQueue(u, 0, kw)
+		}
+	}
+
+	mu.Lock()
+	added := len(queue) - before
+	if added > 0 {
+		// Rotate the newly appended seeds to the front, keeping their order.
+		fresh := append([]string(nil), queue[before:]...)
+		queue = append(fresh, queue[:before]...)
+	}
+	mu.Unlock()
+	fmt.Printf("Loaded %d seed URLs from %s (%d queued)\n", len(urls), filename, added)
 }
 
 // addInfectionResearchFlag adds a command line flag for infection research search

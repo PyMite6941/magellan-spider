@@ -75,8 +75,15 @@ BATCH_TOPICS=$(sed -n "$((CURSOR + 1)),$((CURSOR + BATCH_SIZE))p" "$TOPICS_FILE"
 while IFS= read -r topic; do
     [ -z "$topic" ] && continue
     echo "=== $topic ==="
+    # Verified sources from the Source Finder go to the front of the queue. With
+    # SOURCES_URL/SOURCES_KEY unset, or the service down, the file is just empty
+    # and the spider uses its built-in keyword seeds as before.
+    # (Not starter_websites.json: those are generic news/reference sites, and
+    # pushing them into every topic's crawl would waste the page limit.)
+    SEEDS_FILE="/tmp/crawl-seeds.json"
+    python sources_client.py fetch "$topic" "$SEEDS_FILE" || echo '{"seeds":[]}' > "$SEEDS_FILE"
     # Never let one bad topic abort the batch — the upload still publishes the rest.
-    if "$SPIDER" -keyword "$topic" -seeds starter_websites.json -limit "$LIMIT" -db "$DB" \
+    if "$SPIDER" -keyword "$topic" -seeds "$SEEDS_FILE" -limit "$LIMIT" -db "$DB" \
         > "/tmp/crawl-topic.log" 2>&1; then
         SAVED=$(grep -c 'Saved' /tmp/crawl-topic.log 2>/dev/null) || SAVED=0
         echo "  ok (${SAVED} pages saved)"
@@ -84,6 +91,8 @@ while IFS= read -r topic; do
         echo "  FAILED (continuing) — last lines:"
         tail -3 /tmp/crawl-topic.log | sed 's/^/    /'
     fi
+    # Report which seeds were crawled, and send uncrawled links back as candidates.
+    python sources_client.py report "$topic" "$SEEDS_FILE" "$DB" || true
     CRAWLED=$((CRAWLED + 1))
 done <<< "$BATCH_TOPICS"
 

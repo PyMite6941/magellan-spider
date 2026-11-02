@@ -74,6 +74,10 @@ jobs:
         env:
           TURSO_URL: ${{ secrets.TURSO_URL }}
           TURSO_TOKEN: ${{ secrets.TURSO_TOKEN }}
+          # Source Finder (Vercel project `api`). Optional: if unset, the spider
+          # crawls from its built-in keyword seeds exactly as before.
+          SOURCES_URL: ${{ secrets.SOURCES_URL }}
+          SOURCES_KEY: ${{ secrets.SOURCES_KEY }}
           BATCH_SIZE: ${{ github.event.inputs.batch_size || '10' }}
           LIMIT: ${{ github.event.inputs.limit || '60' }}
         run: bash crawl_batch.sh
