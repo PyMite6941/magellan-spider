@@ -15,7 +15,8 @@ SQLite syntax (`ON CONFLICT … DO UPDATE SET x = excluded.x`) rather than MySQL
 `ON DUPLICATE KEY UPDATE … VALUES(x)`.
 
 The FTS5 indexes need no attention here: the triggers in turso_schema.sql fire on
-insert and on the DO UPDATE path, so `pages_fts` and `content_fts` stay in sync.
+insert and on the DO UPDATE path, so `pages_fts`, `content_fts`, `news_fts`,
+`images_fts` and `files_fts` stay in sync.
 
 Usage:
     set TURSO_URL / TURSO_TOKEN in spider/.env, then

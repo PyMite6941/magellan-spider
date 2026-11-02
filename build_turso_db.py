@@ -66,7 +66,8 @@ def build(export_path: str, out_path: str, schema_path: str) -> None:
     # every future search misses rows.
     print()
     for fts, base in (("pages_fts", "pages"), ("content_fts", "page_content"),
-                      ("news_fts", "news")):
+                      ("news_fts", "news"), ("images_fts", "images"),
+                      ("files_fts", "files")):
         indexed = db.execute(f"SELECT COUNT(*) FROM {fts}").fetchone()[0]
         total = db.execute(f"SELECT COUNT(*) FROM {base}").fetchone()[0]
         status = "ok" if indexed == total else "MISMATCH"

@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS news (
     updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Images and files are searched with LIKE, which cannot use a normal index for a
--- leading-wildcard match. These help the ORDER BY and the primary-key lookups.
+-- Plain B-tree indexes. A leading-wildcard LIKE can't use them; the trigram
+-- indexes below handle image and file search.
 CREATE INDEX IF NOT EXISTS idx_images_alt ON images (alt);
 CREATE INDEX IF NOT EXISTS idx_files_filename ON files (filename);
 CREATE INDEX IF NOT EXISTS idx_news_bias_crawled ON news (bias, crawled_at DESC);
@@ -129,4 +129,50 @@ CREATE TRIGGER IF NOT EXISTS news_au AFTER UPDATE ON news BEGIN
     INSERT INTO news_fts(news_fts, rowid, title, snippet)
     VALUES ('delete', old.rowid, old.title, old.snippet);
     INSERT INTO news_fts(rowid, title, snippet) VALUES (new.rowid, new.title, new.snippet);
+END;
+
+-- ── Substring search for images and files ───────────────────────────────────
+-- The API searches alt text and filenames with LIKE '%term%'. On the base tables
+-- that reads every row (~290k for images) per search, and Turso bills by rows read.
+-- A trigram FTS5 index answers the same LIKE from the index, with identical
+-- results; terms shorter than 3 characters still fall back to a scan.
+
+CREATE VIRTUAL TABLE IF NOT EXISTS images_fts USING fts5(
+    alt,
+    content='images',
+    content_rowid='rowid',
+    tokenize='trigram'
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS files_fts USING fts5(
+    filename,
+    content='files',
+    content_rowid='rowid',
+    tokenize='trigram'
+);
+
+CREATE TRIGGER IF NOT EXISTS images_ai AFTER INSERT ON images BEGIN
+    INSERT INTO images_fts(rowid, alt) VALUES (new.rowid, new.alt);
+END;
+
+CREATE TRIGGER IF NOT EXISTS images_ad AFTER DELETE ON images BEGIN
+    INSERT INTO images_fts(images_fts, rowid, alt) VALUES ('delete', old.rowid, old.alt);
+END;
+
+CREATE TRIGGER IF NOT EXISTS images_au AFTER UPDATE ON images BEGIN
+    INSERT INTO images_fts(images_fts, rowid, alt) VALUES ('delete', old.rowid, old.alt);
+    INSERT INTO images_fts(rowid, alt) VALUES (new.rowid, new.alt);
+END;
+
+CREATE TRIGGER IF NOT EXISTS files_ai AFTER INSERT ON files BEGIN
+    INSERT INTO files_fts(rowid, filename) VALUES (new.rowid, new.filename);
+END;
+
+CREATE TRIGGER IF NOT EXISTS files_ad AFTER DELETE ON files BEGIN
+    INSERT INTO files_fts(files_fts, rowid, filename) VALUES ('delete', old.rowid, old.filename);
+END;
+
+CREATE TRIGGER IF NOT EXISTS files_au AFTER UPDATE ON files BEGIN
+    INSERT INTO files_fts(files_fts, rowid, filename) VALUES ('delete', old.rowid, old.filename);
+    INSERT INTO files_fts(rowid, filename) VALUES (new.rowid, new.filename);
 END;
