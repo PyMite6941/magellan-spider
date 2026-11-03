@@ -176,3 +176,21 @@ CREATE TRIGGER IF NOT EXISTS files_au AFTER UPDATE ON files BEGIN
     INSERT INTO files_fts(files_fts, rowid, filename) VALUES ('delete', old.rowid, old.filename);
     INSERT INTO files_fts(rowid, filename) VALUES (new.rowid, new.filename);
 END;
+
+-- ── Spelling vocabulary ──────────────────────────────────────────────────────
+-- Every word in the indexed text (title, snippet, cleaned body), unstemmed and
+-- lowercased, with the number of pages it appears on. The search API uses it to
+-- correct typos ("Showing results for ...") and for autocomplete. FTS5's own
+-- vocabulary (fts5vocab) would be the natural source, but Turso refuses to create
+-- fts5vocab tables, and its terms are Porter stems ("physic"), not words a user
+-- would recognise. build_terms.py fills this table and keeps it current.
+CREATE TABLE IF NOT EXISTS terms (
+    term TEXT PRIMARY KEY,
+    df   INTEGER NOT NULL
+) WITHOUT ROWID;
+
+-- build_terms.py's watermark: the highest pages.rowid already counted.
+CREATE TABLE IF NOT EXISTS terms_state (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);

@@ -118,6 +118,9 @@ if [ -z "${TURSO_URL:-}" ] || [ -z "${TURSO_TOKEN:-}" ]; then
 fi
 
 python turso_upload.py --db "$DB"
+# Add the new pages' words to the spelling vocabulary (typo correction and
+# autocomplete). Search works without it, so a failure here doesn't fail the crawl.
+python build_terms.py || echo "build_terms failed; spelling vocabulary not updated"
 
 # ── Advance ───────────────────────────────────────────────────────────────────
 NEXT=$(( (CURSOR + BATCH_SIZE) % TOTAL ))

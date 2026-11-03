@@ -126,6 +126,7 @@ key appears in no git history.
 | `main.go`, `helpers.go`, `news_spider.go` | the crawler |
 | `filters.py` | junk-page/image filters and URL canonicalisation, shared by every path |
 | `turso_upload.py` | incremental publish to Turso |
+| `build_terms.py` | spelling vocabulary (`terms`) for the API's typo correction and autocomplete; incremental, run by `crawl_batch.sh` after each upload. `--rebuild` recounts everything |
 | `export_for_migration.py` | working DB → portable export |
 | `build_turso_db.py` | export → upload-ready DB with FTS5 built |
 | `turso_schema.sql` | schema, FTS5 indexes, sync triggers |
